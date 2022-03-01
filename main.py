@@ -2,11 +2,33 @@
 from typing import Optional
 
 # Import de Pydantic
+from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
 # Imports de fastAPI
-from fastapi import FastAPI, Path, Query
+from fastapi import Body, FastAPI, Path, Query
 
 app = FastAPI()
+
+# Modelos 
+class Alumno(BaseModel):
+    nombre: str = Field(
+                        ...,
+                        min_length=2,
+                        max_length=30                
+                    )
+    apellidos: str = Field(
+                            ...,
+                            min_length=10,
+                            max_length=50                    
+                        )
+    age: int = Field(
+                        ...,
+                        gt=10,
+                        lt=100
+                    )
+    email: Optional[EmailStr] = None
+    web_url: Optional[HttpUrl] = None
+
 
 @app.get("/")
 def hola():
@@ -58,3 +80,7 @@ def query_alumnos(
                 "Grupo": grupo,
                 "Cautri": cuatri
             }
+
+@app.post("/alumno/new")
+def add_alumno(alumno: Alumno = Body(...)):
+    return alumno
